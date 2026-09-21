@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: bibliotech-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-Project}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - bibliotech-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  eurekaserver:
+    build: ./backend/eurekaserver
+    container_name: bibliotech-eurekaserver
+    ports:
+      - "8761:8761"
+    environment:
+      - SERVER_PORT=8761
+    networks:
+      - bibliotech-net
+
+  apigateway:
+    build: ./backend/apigateway
+    container_name: bibliotech-apigateway
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_SERVER_URL=http://eurekaserver:8761/eureka/
+    depends_on:
+      - eurekaserver
+    networks:
+      - bibliotech-net
+
+  auth-service:
+    build: ./backend/auth-service
+    container_name: bibliotech-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_SERVER_URL=http://eurekaserver:8761/eureka/
+      - JWT_SECRET=${JWT_SECRET:-bibliotechSuperSecretKeyForJWT2026ChangeThisBeforeSubmission}
+    depends_on:
+      - eurekaserver
+    networks:
+      - bibliotech-net
+
+  userservice:
+    build: ./backend/UserService
+    container_name: bibliotech-userservice
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_SERVER_URL=http://eurekaserver:8761/eureka/
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB:-Project}
+      - DB_USERNAME=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - JWT_SECRET=${JWT_SECRET:-bibliotechSuperSecretKeyForJWT2026ChangeThisBeforeSubmission}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_started
+    networks:
+      - bibliotech-net
+
+  bookservice:
+    build: ./backend/bookservice
+    container_name: bibliotech-bookservice
+    ports:
+      - "8083:8083"
+    environment:
+      - EUREKA_SERVER_URL=http://eurekaserver:8761/eureka/
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB:-Project}
+      - DB_USERNAME=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - JWT_SECRET=${JWT_SECRET:-bibliotechSuperSecretKeyForJWT2026ChangeThisBeforeSubmission}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_started
+    networks:
+      - bibliotech-net
+
+  loanservice:
+    build: ./backend/LoanService
+    container_name: bibliotech-loanservice
+    ports:
+      - "8084:8084"
+    environment:
+      - EUREKA_SERVER_URL=http://eurekaserver:8761/eureka/
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB:-Project}
+      - DB_USERNAME=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - JWT_SECRET=${JWT_SECRET:-bibliotechSuperSecretKeyForJWT2026ChangeThisBeforeSubmission}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_started
+    networks:
+      - bibliotech-net
+
+  fine-service:
+    build: ./backend/fine-service
+    container_name: bibliotech-fine-service
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_SERVER_URL=http://eurekaserver:8761/eureka/
+      - JWT_SECRET=${JWT_SECRET:-bibliotechSuperSecretKeyForJWT2026ChangeThisBeforeSubmission}
+    depends_on:
+      - eurekaserver
+    networks:
+      - bibliotech-net
+
+volumes:
+  pgdata:
+
+networks:
+  bibliotech-net:
+    driver: bridge

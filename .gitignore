@@ -1,0 +1,25 @@
+# Maven build output
+target/
+*.class
+
+# Eclipse & IDE metadata
+.metadata/
+.settings/
+.classpath
+.project
+bin/
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Frontend dependencies & builds
+node_modules/
+dist/
+.env.local
+
