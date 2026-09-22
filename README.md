@@ -1,7 +1,7 @@
 # Enterprise Academic Resource & Circulation Management Platform (Bibliotech)
 
 **Platform Organization**: Bibliotech Circulation Systems  
-**Project Lead & Integration Engineer**: Dhanya  
+**Project Lead & Integration Engineer**: Harsha pravalika  
 **Architecture**: Cloud-Native Spring Boot Microservices with Netflix Eureka & Spring Cloud Gateway  
 
 ---
