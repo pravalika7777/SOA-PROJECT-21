@@ -390,7 +390,7 @@ Import `Bibliotech_Platform.postman_collection.json` into Postman. All requests 
 
 ---
 
-## 21. Team & Project Integration (Role: Dhanya)
+## 21. Team & Project Integration (Role: Harsha pravalika)
 
 - Standardized all ports (`8761`, `8080`, `8081`, `8082`, `8083`, `8084`, `8085`).
 - Unified Java 17, Spring Boot 3.2.5, and Spring Cloud 2023.0.1 across all services.
